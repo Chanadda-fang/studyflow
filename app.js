@@ -6,6 +6,7 @@
   const demoData = () => ({subjects:[],questions:[],sessions:[],mood:'',lastReplan:null,dailyMinutes:90});
   let data;
   try { data = JSON.parse(localStorage.getItem(STORE)) || demoData(); } catch { data = demoData(); }
+  data.flashcards ||= [];
   const save = () => localStorage.setItem(STORE, JSON.stringify(data));
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
   const subjectBy = id => data.subjects.find(s => s.id === id);
@@ -25,10 +26,11 @@
     const slots=Math.max(1,Math.min(4,Math.floor((data.dailyMinutes||90)/30)));
     return all.filter((x,i)=> (i % 5)===((offset%5+5)%5)).slice(0,slots).map(x=>({...x,minutes:x.topic.confidence==='low'?30:25}));
   }
-  function render(){ renderHeader();renderHome();renderPlan();renderSubjects();renderQuestions(); }
+  function render(){ renderHeader();renderHome();renderPlan();renderSubjects();renderQuestions();renderFlashcards(); }
   function renderHeader(){
     $('#todayLabel').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short'});
     $('#questionCount').textContent=data.questions.length;
+    $('#flashcardCount').textContent=data.flashcards.filter(c=>c.nextReview<=Date.now()).length;
     const n=subjectsSorted()[0];
     $('#starterPanel').classList.toggle('hidden',data.subjects.length>0);
     if(n){const left=daysUntil(n.date);$('#nextExamTitle').textContent=`${n.name} · ${niceDate(n.date)}`;$('#nextExamSub').textContent=left<0?'This exam has passed. Ready to add another?':`${left} days to go. Give the trickiest topics a little extra room.`;$('#daysLeft').textContent=Math.max(0,left);$('#countdownProgress').style.width=`${Math.min(100,Math.max(15,100-left*9))}%`;}
@@ -62,6 +64,14 @@
     const list=$('#questionsList');list.innerHTML=data.questions.length?data.questions.map(q=>`<div class="question-row"><span class="question-spark" style="width:28px;height:28px;font-size:15px">✎</span><p>${escapeHtml(q.text)}</p>${subjectBy(q.subjectId)?`<small>${escapeHtml(subjectBy(q.subjectId).name)}</small>`:''}<button data-delete-question="${q.id}" aria-label="Mark question resolved">✓</button></div>`).join(''):'<div class="no-questions">Your question stash is empty. Save a question here whenever you hit a snag.</div>';
     list.querySelectorAll('[data-delete-question]').forEach(b=>b.onclick=()=>{data.questions=data.questions.filter(q=>q.id!==b.dataset.deleteQuestion);save();render();toast('Question cleared from your stash.');});
   }
+  function renderFlashcards(){
+    const due=data.flashcards.filter(c=>c.nextReview<=Date.now()).length;
+    $('#totalCards').textContent=data.flashcards.length;$('#dueCards').textContent=due;$('#dueCountLabel').textContent=due;
+    $('#flashcardEmpty').classList.toggle('hidden',data.flashcards.length>0);$('#flashcardGrid').innerHTML=data.flashcards.map(c=>`<article class="garden-card ${c.nextReview<=Date.now()?'is-due':''}"><button class="garden-flip" data-flip-card="${c.id}" aria-label="Flip flashcard"><span class="garden-card-top"><span>${c.subjectId&&subjectBy(c.subjectId)?escapeHtml(subjectBy(c.subjectId).name):'MY CARD'}</span><span>${c.nextReview<=Date.now()?'READY TO REVIEW':'IN THE GARDEN'}</span></span><span class="garden-card-label">QUESTION</span><b>${escapeHtml(c.question)}</b><span class="garden-card-bottom">Tap to peek at your saved answer ✧</span></button><button class="garden-delete" data-delete-card="${c.id}" aria-label="Delete flashcard">×</button></article>`).join('');
+    $('#cardSubject').innerHTML='<option value="">No subject</option>'+subjectsSorted().map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+    $('#flashcardGrid').querySelectorAll('[data-flip-card]').forEach(b=>b.onclick=()=>{const c=data.flashcards.find(x=>x.id===b.dataset.flipCard);if(!c)return;b.classList.toggle('is-flipped');const label=b.querySelector('.garden-card-label'),content=b.querySelector('b'),hint=b.querySelector('.garden-card-bottom');const flipped=b.classList.contains('is-flipped');label.textContent=flipped?'ANSWER':'QUESTION';content.textContent=flipped?c.answer:c.question;hint.textContent=flipped?'Tap to turn it back ✧':'Tap to peek at your saved answer ✧';});
+    $('#flashcardGrid').querySelectorAll('[data-delete-card]').forEach(b=>b.onclick=()=>{data.flashcards=data.flashcards.filter(c=>c.id!==b.dataset.deleteCard);save();render();toast('Card removed from your garden.');});
+  }
   function markDone(id,value){const {topic}=topicBy(id);if(!topic)return;topic.done=value;if(value&&topic.confidence==='low')topic.confidence='mid';save();render();toast(value?'Topic complete. Look at you ✦':'Topic added back to your plan.');}
   function selectTask(id){const {subject,topic}=topicBy(id);if(!topic)return;$('#timerTaskName').textContent=topic.name;window.activeTopic=id;toast(`Ready when you are: ${topic.name}`);}
   function replan(){
@@ -77,9 +87,16 @@
   $('#timerReset').onclick=()=>{clearInterval(tick);active=false;remaining=duration;display();$('#timerStart').innerHTML='Start focus <span>▶</span>';$('#timerMascot').classList.remove('is-focused');};
   $('#sessionForm').addEventListener('submit',e=>{e.preventDefault();const conf=$('input[name="confidence"]:checked')?.value||'mid';const note=$('#sessionNote').value.trim();if(window.activeTopic){const {topic}=topicBy(window.activeTopic);if(topic){topic.confidence=conf;if(conf==='high')topic.done=true;topic.minutes=(topic.minutes||0)+sessionMinutes;}}data.sessions.push({at:Date.now(),minutes:sessionMinutes,topicId:window.activeTopic||null,note});if(note&&window.activeTopic){const {subject,topic}=topicBy(window.activeTopic);data.questions.push({id:crypto.randomUUID(),text:note,subjectId:subject?.id||'',created:Date.now()});}save();$('#sessionDialog').close();$('#sessionNote').value='';$('#focusMinutes').value='';sessionMinutes=0;duration=0;remaining=0;display();render();toast('Progress saved. Take a little eye break now ☁');});
   // navigation and actions
-  const viewNames={home:'Today',plan:'Study plan',subjects:'Subjects & topics',questions:'Question stash'};
+  const viewNames={home:'Today',plan:'Study plan',subjects:'Subjects & topics',flashcards:'Flashcards',questions:'Question stash'};
   function go(view){$$('.view').forEach(v=>v.classList.remove('active-view'));$(`#${view}View`).classList.add('active-view');$$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$('#crumb').textContent=viewNames[view];window.scrollTo({top:0,behavior:'smooth'});}
   $$('.nav-item').forEach(b=>b.onclick=()=>go(b.dataset.view));$$('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+  $('#flashcardForm').addEventListener('submit',e=>{e.preventDefault();data.flashcards.unshift({id:crypto.randomUUID(),question:$('#cardQuestion').value.trim(),answer:$('#cardAnswer').value.trim(),subjectId:$('#cardSubject').value||'',created:Date.now(),nextReview:Date.now(),interval:0,repetitions:0});save();e.target.reset();renderFlashcards();renderHeader();toast('New card planted in your garden ✿');});
+  let reviewQueue=[],reviewIndex=0,reviewRevealed=false;
+  function showReviewCard(){const card=reviewQueue[reviewIndex];if(!card){$('#reviewDialog').close();render();toast('Review complete. You showed up for yourself ✦');return;}reviewRevealed=false;$('#reviewCardSide').textContent='QUESTION';$('#reviewCardContent').textContent=card.question;$('#reviewCardHint').textContent='Tap to reveal the answer ✦';$('#reviewRatings').classList.add('hidden');$('#reviewPosition').textContent=`Card ${reviewIndex+1} of ${reviewQueue.length}`;$('#reviewRemaining').textContent=`${reviewQueue.length-reviewIndex} left`;$('#reviewProgress').style.width=`${reviewIndex/reviewQueue.length*100}%`;$('#reviewFlipCard').classList.remove('is-flipped');}
+  $('#reviewFlipCard').onclick=()=>{const card=reviewQueue[reviewIndex];if(!card)return;reviewRevealed=!reviewRevealed;$('#reviewFlipCard').classList.toggle('is-flipped',reviewRevealed);$('#reviewCardSide').textContent=reviewRevealed?'ANSWER':'QUESTION';$('#reviewCardContent').textContent=reviewRevealed?card.answer:card.question;$('#reviewCardHint').textContent=reviewRevealed?'Take a breath, then rate how it felt.':'Tap to reveal the answer ✦';$('#reviewRatings').classList.toggle('hidden',!reviewRevealed);};
+  $('#studyDueBtn').onclick=()=>{reviewQueue=data.flashcards.filter(c=>c.nextReview<=Date.now()).sort((a,b)=>a.nextReview-b.nextReview);reviewIndex=0;if(!reviewQueue.length){toast('No cards due right now. Add a card or come back later ✧');return;}showReviewCard();$('#reviewDialog').showModal();};
+  $('#closeReview').onclick=()=>$('#reviewDialog').close();
+  $$('#reviewRatings [data-rating]').forEach(b=>b.onclick=()=>{const card=reviewQueue[reviewIndex];if(!card)return;const rating=b.dataset.rating;const intervals={again:10/(60*24),hard:1,good:3,easy:7};card.interval=rating==='again'?0:rating==='hard'?Math.max(1,Math.round((card.interval||1)*1.2)):rating==='good'?Math.max(3,(card.interval||1)*2):Math.max(7,(card.interval||1)*3);card.repetitions=rating==='again'?0:(card.repetitions||0)+1;card.nextReview=Date.now()+intervals[rating]*day;card.lastRating=rating;save();reviewIndex++;render();showReviewCard();});
   $('#replanBtn').onclick=replan;
   const dialog=$('#subjectDialog');$('#addSubjectBtn').onclick=()=>dialog.showModal();$$('[data-add-subject]').forEach(b=>b.onclick=()=>dialog.showModal());
   $('#subjectForm').addEventListener('submit',e=>{e.preventDefault();const name=$('#subjectName').value.trim(),date=$('#subjectDate').value,color=$('#subjectColor').value,topics=$('#subjectTopics').value.split('\n').map(x=>x.trim()).filter(Boolean);if(!name||!date)return;data.dailyMinutes=Number($('#dailyMinutes').value)||90;data.subjects.push({id:crypto.randomUUID(),name,date,color,topics:topics.map(name=>({id:crypto.randomUUID(),name,confidence:'low',done:false,minutes:0}))});save();dialog.close();e.target.reset();render();go('subjects');toast('Subject added. Let’s take it one step at a time ✦');});
