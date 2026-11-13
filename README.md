@@ -1,34 +1,39 @@
 # StudyFlow
 
-เว็บเปล่าสำหรับนักศึกษาตั้งแผนอ่านสอบของตัวเอง: กรอกวิชา วันสอบ หัวข้อ และเวลาอ่านที่อยากจัดให้ต่อวัน จากนั้นใช้ตารางอ่าน ตัวจับเวลา บันทึกความเข้าใจ จดจุดที่ยังงง และปรับแผนได้เมื่ออ่านไม่ทัน ไม่มีข้อมูลวิชาตัวอย่างติดมา
+A calm, customizable study planner for exam season. Add your own subjects, exam dates, topics, and daily study time; StudyFlow turns them into manageable steps and gives you a focus timer, progress notes, and a flexible plan.
 
-## เปิดใช้งาน
+## Try the live site
 
-เปิด `index.html` ในเบราว์เซอร์ได้เลย ไม่ต้องติดตั้งแพ็กเกจหรือมี API key ข้อมูลที่ผู้ใช้กรอกจะถูกเก็บไว้ในเบราว์เซอร์เครื่องนั้นด้วย `localStorage`
+[Open StudyFlow](https://chanadda-fang.github.io/studyflow/)
 
-เริ่มจากหน้าเปล่าแล้วกด “สร้างแผนแรก” เพื่อเพิ่มวิชา วันสอบ หัวข้อ และเวลาที่อยากอ่านต่อวัน จากนั้นลองใช้ตัวจับเวลา ทำเครื่องหมายว่าอ่านแล้ว ปรับระดับความเข้าใจ และจดคำถามได้ ปุ่ม “ล้างข้อมูลของฉัน” อยู่ท้ายหน้า
+## What it does
 
-## นำขึ้น GitHub และเปิดเป็นเว็บด้วย GitHub Pages
+- Build a personal plan from subjects, exam dates, topics, and available study time.
+- See a seven-day plan that prioritizes upcoming exams and topics you feel less confident about.
+- Use 25-minute focus, 15-minute gentle-start, or 5-minute break timers.
+- Save session notes, confidence levels, and questions to revisit.
+- Re-plan remaining topics when a study day does not go as expected.
+- Check in with your energy, review progress, and switch to dark mode.
 
-1. เข้า GitHub แล้วสร้าง repository ใหม่ ตั้งชื่อเช่น `studyflow` และเลือก **Public**
-2. อัปโหลดไฟล์ทั้งหมดในโฟลเดอร์นี้ (`index.html`, `styles.css`, `app.js`, `README.md`) ไปไว้ที่ root ของ repository
-3. ใน repository เปิด **Settings → Pages**
-4. ในส่วน **Build and deployment** เลือก **Deploy from a branch**, เลือก `main` และโฟลเดอร์ `/ (root)` แล้วกด **Save**
-5. รอให้ GitHub Pages เผยแพร่ แล้วเปิดลิงก์ที่แสดงในหน้า Pages โดยปกติจะอยู่ในรูป `https://ชื่อผู้ใช้.github.io/studyflow/`
+## Use it
 
-เมื่อแก้ไฟล์และอัปโหลดเข้า branch `main` อีกครั้ง หน้าเว็บจะอัปเดตตาม การตั้งค่าและชื่อเมนู GitHub อาจเปลี่ยนได้เล็กน้อย
+1. Open the site and choose **สร้างแผนแรก**.
+2. Enter your subject, exam date, and the topics you want to study. Choose how much time you want to set aside each day.
+3. Open the plan to see today's suggested steps, or start a focus timer from the home screen.
+4. After a session, record how confident you feel and any questions to revisit.
 
-## ฟีเจอร์
+No account or installation is needed. This version stores your plans in the browser on the device you use. The data does not sync across devices.
 
-- เพิ่มวิชา วันสอบ และหัวข้อที่ต้องอ่าน
-- จัดลำดับงานจากวันสอบและระดับความเข้าใจ พร้อมตาราง 7 วัน
-- ตัวจับเวลา 25/15 นาทีและช่วงพัก 5 นาที พร้อมบันทึกเซสชัน
-- บันทึกความเข้าใจหลังอ่านและเวลาที่ใช้ต่อหัวข้อ
-- จดคำถามหรือจุดที่ยังงงแยกตามวิชา
-- ปรับแผนงานที่เหลือ และแสดงภาพรวมความคืบหน้าก่อนสอบ
-- เช็กอินอารมณ์เพื่อรับคำแนะนำเริ่มอ่านที่เหมาะกับวันนั้น
-- รองรับหน้าจอมือถือและโหมดมืด
+## Run locally
 
-## หมายเหตุ
+Open `index.html` in a modern browser. The app is static HTML, CSS, and JavaScript; it needs no package installation or API key. Google Fonts are loaded from the web when available.
 
-รุ่นนี้เป็นเว็บฝั่งผู้ใช้ ข้อมูลถูกเก็บเฉพาะในเบราว์เซอร์และอุปกรณ์ที่เปิดใช้งาน จึงยังไม่มีบัญชีผู้ใช้ การซิงก์ข้ามอุปกรณ์ หรือห้องอ่านพร้อมเพื่อน
+## Project files
+
+- `index.html` — app structure and forms
+- `styles.css` — responsive blue visual design
+- `app.js` — plans, timer, progress, and browser storage
+
+## GitHub Pages
+
+This repository publishes the site from the `main` branch root. For another repository, open **Settings → Pages**, select **Deploy from a branch**, choose `main` and `/ (root)`, then save.
