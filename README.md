@@ -1,39 +1,43 @@
 # StudyFlow
 
-A calm, customizable study planner for exam season. Add your own subjects, exam dates, topics, and daily study time; StudyFlow turns them into manageable steps and gives you a focus timer, progress notes, and a flexible plan.
+StudyFlow is a personal study planner for students preparing for exams. It helps turn a long list of subjects and topics into manageable daily steps, then makes it easier to start, notice progress, and adjust when life gets in the way.
 
-## Try the live site
+## Try the live app
 
 [Open StudyFlow](https://chanadda-fang.github.io/studyflow/)
 
-## What it does
+## What you can do
 
-- Build a personal plan from subjects, exam dates, topics, and available study time.
-- See a seven-day plan that prioritizes upcoming exams and topics you feel less confident about.
-- Use 25-minute focus, 15-minute gentle-start, or 5-minute break timers.
-- Save session notes, confidence levels, and questions to revisit.
-- Re-plan remaining topics when a study day does not go as expected.
-- Check in with your energy, review progress, and switch to dark mode.
+- Add your own subjects, exam dates, topics, and available study time.
+- Get a flexible seven-day plan that prioritizes upcoming exams and topics that need review.
+- Set a custom focus timer in minutes. There are no preset session lengths.
+- Choose a study topic or start a timer for any task.
+- Track focus sessions, topic confidence, completed work, and notes.
+- Save questions to revisit later and re-plan unfinished topics.
+- Check in with your energy and get a small, matching study suggestion.
+- Tap your animated focus buddy for a little encouragement.
+- Use the responsive interface on desktop or mobile, with light and dark themes.
 
-## Use it
+## Getting started
 
-1. Open the site and choose **สร้างแผนแรก**.
-2. Enter your subject, exam date, and the topics you want to study. Choose how much time you want to set aside each day.
-3. Open the plan to see today's suggested steps, or start a focus timer from the home screen.
-4. After a session, record how confident you feel and any questions to revisit.
+1. Open the live app and select **Create my first plan**.
+2. Add a subject, exam date, topics, and the amount of study time you can fit into a day.
+3. Choose a next step from **Today** or **Study plan**. You can also focus freely.
+4. In the **Focus Room**, enter any duration from 1 to 240 minutes, then press **Start focus**.
+5. When the timer ends, record how the session went and save any note or question for later.
 
-No account or installation is needed. This version stores your plans in the browser on the device you use. The data does not sync across devices.
+No account or installation is required. This version stores data in the browser on the device where you use it; it does not sync across devices.
 
 ## Run locally
 
-Open `index.html` in a modern browser. The app is static HTML, CSS, and JavaScript; it needs no package installation or API key. Google Fonts are loaded from the web when available.
+Open `index.html` in a modern browser. StudyFlow is a static HTML, CSS, and JavaScript app, so it needs no package installation or API key. Google Fonts are loaded from the web when available.
 
-## Project files
+## Files
 
-- `index.html` — app structure and forms
-- `styles.css` — responsive blue visual design
-- `app.js` — plans, timer, progress, and browser storage
+- `index.html` — app structure, copy, and forms
+- `styles.css` — responsive visual design and interactions
+- `app.js` — planning logic, focus timer, progress, and browser storage
 
 ## GitHub Pages
 
-This repository publishes the site from the `main` branch root. For another repository, open **Settings → Pages**, select **Deploy from a branch**, choose `main` and `/ (root)`, then save.
+The public repository publishes the site from the `main` branch root using GitHub Pages.
